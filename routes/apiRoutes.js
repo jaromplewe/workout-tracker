@@ -1,4 +1,4 @@
-var db = reqire("../models");
+var db = require("../models");
 
 module.exports = function (app) {
     app.get("/api/workouts", (req, res) => {
@@ -19,4 +19,34 @@ module.exports = function (app) {
         }
     })
 
+    app.put("/api/workouts/:id", ({ body, params }, res) => {
+        const workoutId = params.id;
+        let savedExercises = [];
+
+        db.Workout.find({ _id: workoutId })
+            .then(dbWorkout => {
+                savedExercises = dbWrokout[0].exercises;
+                res.json(dbWorkout[0].exercises);
+                let allExercises = [...savedExercises, body]
+                console.log(allExercises)
+                updateWorkout(allExercises)
+            })
+            .catch(err => res.json(err));
+
+        function updateWorkout(exercises) {
+            db.Workout.findByIdAndUpdate(workoutId, { exercises: exercises }, function (err, doc) {
+                if (err) {
+                    console.log(err)
+                }
+            })
+        }
+    })
+
+    app.get("/api/workouts/range", (req, res) => {
+        db.Workout.find({})
+            .then(workout => {
+                res.json(workout);
+            })
+            .catch(err => res.json(err));
+    });
 };
